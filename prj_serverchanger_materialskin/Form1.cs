@@ -371,9 +371,12 @@ namespace prj_serverchanger_materialskin
 
                 foreach (XElement element in elements)
                 {
-                    if ((string)element.Attribute("server") != null || element.Attribute("server").ToString() != "")
+                    if (element.Attribute("server") != null)
                     {
-                        element.Attribute("server").Value = "tableau.scanntech.com";
+                        if ((string)element.Attribute("server") != null || element.Attribute("server").ToString() != "")
+                        {
+                            element.Attribute("server").Value = "tableau.scanntech.com";
+                        }
                     }
                 }
 
@@ -436,9 +439,12 @@ namespace prj_serverchanger_materialskin
 
                 foreach (XElement element in elements)
                 {
-                    if ((string)element.Attribute("server") != null || element.Attribute("server").ToString() != "")
+                    if (element.Attribute("server") != null)
                     {
-                        element.Attribute("server").Value = "tableau.scanntech.com";
+                        if ((string)element.Attribute("server") != null || element.Attribute("server").ToString() != "")
+                        {
+                            element.Attribute("server").Value = "tableau.scanntech.com";
+                        }
                     }
                 }
 
