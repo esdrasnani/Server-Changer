@@ -66,7 +66,6 @@
             this.materialListView1.TabIndex = 0;
             this.materialListView1.UseCompatibleStateImageBehavior = false;
             this.materialListView1.View = System.Windows.Forms.View.Details;
-            this.materialListView1.SelectedIndexChanged += new System.EventHandler(this.materialListView1_SelectedIndexChanged);
             this.materialListView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.materialListView1_DragDrop);
             this.materialListView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.materialListView1_DragEnter);
             // 

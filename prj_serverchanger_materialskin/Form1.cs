@@ -13,6 +13,7 @@ using System.Xml;
 using MaterialSkin;
 using Ionic.Zip;
 using System.Threading;
+using System.Diagnostics;
 
 namespace prj_serverchanger_materialskin
 {
@@ -65,13 +66,9 @@ namespace prj_serverchanger_materialskin
                 }
             }
 
-
-            int count = 0;
             List<String> files_path = new List<String>();
             for (int i = 0; i < materialListView1.Items.Count; i++)
-            {
                 files_path.Add(materialListView1.Items[i].Text);
-            }
 
             _TotalArquivos = materialListView1.Items.Count;
 
@@ -93,217 +90,6 @@ namespace prj_serverchanger_materialskin
             }
         }
 
-        #region Botão Mudar Servidor
-
-        private void btn_mudar_servidor_Click(object sender, EventArgs e)
-        {
-            int count = 0;
-            List<String> files_path = new List<String>();
-            for (int i = 0; i < materialListView1.Items.Count; i++)
-            {
-                files_path.Add(materialListView1.Items[i].Text);
-            }
-
-
-
-            for (int i = 0; i < materialListView1.Items.Count; i++)
-            {
-                FileInfo fi = new FileInfo(files_path[i]);
-
-                if (fi.Extension == ".twb")
-                {
-                    materialProgressBar1.Minimum = 0;
-                    materialProgressBar1.Maximum = 7;
-                    materialProgressBar1.Step = 1;
-                    int pct = (materialProgressBar1.Value / 22) * 100;
-
-                    File.Move(files_path[i], Path.ChangeExtension(files_path[i], ".xml"));
-                    materialProgressBar1.PerformStep();
-                    ;
-
-                    files_path[i] = Path.ChangeExtension(files_path[i], ".xml");
-                    materialProgressBar1.PerformStep();
-                    ;
-
-                    XDocument doc;
-                    try
-                    {
-                        doc = XDocument.Load(files_path[i]);
-                        materialProgressBar1.PerformStep();
-
-
-                    }
-                    catch (XmlException xmle)
-                    {
-                        MessageBox.Show("Erro ao Carregar o Arquivo!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        MessageBox.Show(xmle.ToString());
-                        return;
-                    }
-
-                    var elements = doc.Descendants("connection");
-                    materialProgressBar1.PerformStep();
-                    ;
-
-                    foreach (XElement element in elements)
-                    {
-                        if ((string)element.Attribute("server") != null || element.Attribute("server").ToString() != "")
-                        {
-                            element.Attribute("server").Value = "tableau.scanntech.com";
-                            materialProgressBar1.PerformStep();
-                            ;
-
-                        }
-                    }
-
-                    doc.Save(files_path[i]);
-                    materialProgressBar1.PerformStep();
-                    ;
-
-                    File.Move(files_path[i], Path.ChangeExtension(files_path[i], ".twb"));
-                    materialProgressBar1.PerformStep();
-                    ;
-
-                }
-                else if (fi.Extension == ".twbx")
-                {
-                    materialProgressBar1.Minimum = 0;
-                    materialProgressBar1.Maximum = 100;
-                    materialProgressBar1.Step = 1;
-
-                    int pct = (materialProgressBar1.Value / 22) * 100;
-                    File.Move(files_path[i], Path.ChangeExtension(files_path[i], ".zip"));
-                    materialProgressBar1.Value += 1;
-
-                    files_path[i] = Path.ChangeExtension(files_path[i], ".zip");
-                    materialProgressBar1.Value += 1;
-
-
-
-
-
-                    string file_twb = files_path[i].Replace("zip", "twb");
-                    int index = files_path[i].LastIndexOf(@"\");
-                    index++;
-                    file_twb = file_twb.Substring(index, file_twb.Length - index);
-
-                    string file_twb_aux;
-                    string path = files_path[i].Substring(0, index);
-                    using (ZipFile zip = ZipFile.Read(files_path[i]))
-                    {
-                        ZipEntry file = new ZipEntry();
-
-                        foreach (ZipEntry entry in zip.Entries)
-                        {
-                            if (entry.FileName.Contains("twb"))
-                            {
-                                file = entry;
-                                file.Extract(path);
-                                break;
-                            }
-                        }
-                        materialProgressBar1.Value += 1;
-
-
-
-                        zip.RemoveEntry(file);
-                        materialProgressBar1.Value += 1;
-
-
-
-                        zip.Save();
-                        materialProgressBar1.Value += 1;
-
-                        file_twb_aux = path + file.FileName;
-
-                        File.Move(file_twb_aux, Path.ChangeExtension(file_twb_aux, ".xml"));
-                        materialProgressBar1.Value += 1;
-                        file_twb_aux = Path.ChangeExtension(file_twb_aux, ".xml");
-                        materialProgressBar1.Value += 1;
-
-                    }
-
-                    XDocument doc;
-                    try
-                    {
-                        doc = XDocument.Load(file_twb_aux);
-                        materialProgressBar1.Value += 1;
-
-
-
-                    }
-                    catch (XmlException xmle)
-                    {
-                        MessageBox.Show("Erro ao Carregar o Arquivo!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        MessageBox.Show(xmle.ToString());
-                        return;
-                    }
-
-                    var elements = doc.Descendants("connection");
-
-                    foreach (XElement element in elements)
-                    {
-                        if ((string)element.Attribute("server") != null || element.Attribute("server").ToString() != "")
-                        {
-                            element.Attribute("server").Value = "tableau.scanntech.com";
-                            materialProgressBar1.Value += 1;
-                        }
-                    }
-
-                    doc.Save(file_twb_aux);
-
-                    materialProgressBar1.Value += 1;
-
-
-                    File.Move(file_twb_aux, Path.ChangeExtension(file_twb_aux, ".twb"));
-                    materialProgressBar1.Value += 1;
-
-
-
-                    file_twb_aux = Path.ChangeExtension(file_twb_aux, ".twb");
-
-
-                    using (ZipFile zip = ZipFile.Read(files_path[i]))
-                    {
-                        zip.AddFile(file_twb_aux, "");
-                        materialProgressBar1.Value += 1;
-
-
-
-                        zip.Save();
-                        materialProgressBar1.Value += 1;
-
-
-
-                    }
-
-                    materialProgressBar1.Value += 1;
-
-
-
-                    File.Delete(file_twb_aux);
-                    materialProgressBar1.Value += 1;
-
-
-
-                    File.Move(files_path[i], Path.ChangeExtension(files_path[i], ".twbx"));
-                    materialProgressBar1.Value += 1;
-
-
-
-                }
-                //count++;
-            }
-            MessageBox.Show("Servidor Alterado com Sucesso!", "Sucesso!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            materialListView1.Items.Clear();
-            materialProgressBar1.Value = 0;
-        }
-        #endregion
-
-        private void materialListView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void sairToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -311,11 +97,10 @@ namespace prj_serverchanger_materialskin
 
         private void Form1_Resize(object sender, EventArgs e)
         {
+            notifyIcon1.Visible = true;
+
             if (this.WindowState == FormWindowState.Minimized)
-            {
                 Hide();
-                notifyIcon1.Visible = true;
-            }
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -486,10 +271,26 @@ namespace prj_serverchanger_materialskin
 
                 if (_count == _TotalArquivos)
                 {
-                    MessageBox.Show("Servidor Alterado com Sucesso!", "Sucesso!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    materialListView1.Items.Clear();
                     lbl_pct.Text = "Concluído!";
-                    _count = 0;
+
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        for (int i = 0; i < materialListView1.Items.Count; i++)
+                        {
+                            string fullpath = materialListView1.Items[i].Text;
+                            ProcessStartInfo psi = new ProcessStartInfo();
+                            psi.FileName = Path.GetFileName(fullpath);
+                            psi.WorkingDirectory = Path.GetDirectoryName(fullpath);
+                            Process.Start(psi);
+                        }
+                    }
+                    else
+                        MessageBox.Show("Não é Possível Iniciar o Tableau!\nSistema 32-bits Não Suportado!", "Erro!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    
+                    materialListView1.Items.Clear();
+                    
+                    _count = 0;                    
                 }
             }
         }
